@@ -24,6 +24,11 @@
    //paging($res, 100, $out); // search result paging
    $total=count($res);
    for($i=0;$i<$total;$i++) {
+	$json_decoded=json_decode($res[$i]['JSON_DATA']);
+	$res[$i]['JSON_INFO']='Name: '.$json_decoded->name.'; Board: '.$json_decoded->type;
+	$id=$res[$i]['ID'];
+	$stat=SQLSelectOne("SELECT * FROM blynk_data WHERE TITLE='HWOnline' AND DEVICE_ID='$id'");
+	$res[$i]['HWINFO']=$stat['PIN'];
     // some action for every record if required
     $tmp=explode(' ', $res[$i]['UPDATED']);
     $res[$i]['UPDATED']=fromDBDate($tmp[0])." ".$tmp[1];

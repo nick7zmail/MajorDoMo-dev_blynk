@@ -22,8 +22,8 @@
    global $token;
    $rec['TOKEN']=$token;
 
-  // global $json_data;
-   //$rec['JSON_DATA']=$json_data;
+   global $json_data;
+   $rec['JSON_DATA']=$json_data;
 
    global $linked_object;
    $rec['LINKED_OBJECT']=$linked_object;
@@ -38,8 +38,7 @@
   }
   
   $json_data=$this->get_data($rec['TOKEN']);
-  //$rec['JSON_DATA']=$json_data;
-  
+   
   
   //UPDATING RECORD
    if ($ok) {
@@ -56,6 +55,10 @@
   }
   // step: default
   if ($this->tab=='') {
+	$json_decoded=json_decode($rec['JSON_DATA']);
+	$out['JSON_ID']=$json_decoded->id;
+	$out['JSON_NAME']=$json_decoded->name;
+	$out['JSON_TYPE']=$json_decoded->type;
   if ($rec['UPDATED']!='') {
    $tmp=explode(' ', $rec['UPDATED']);
    $out['UPDATED_DATE']=fromDBDate($tmp[0]);
@@ -86,13 +89,22 @@
   if ($this->tab=='data') {
    //dataset2
    $new_id=0;
-   global $delete_id;
-   if ($delete_id) {
-    SQLExec("DELETE FROM blynk_data WHERE ID='".(int)$delete_id."'");
-   }
    $properties=SQLSelect("SELECT * FROM blynk_data WHERE DEVICE_ID='".$rec['ID']."' ORDER BY ID");
    $total=count($properties);
    for($i=0;$i<$total;$i++) {
+	if ($properties[$i]['PIN_TYPE']=='ANALOG') $properties[$i]['PIN_TYPE']='<span class="label label-info">'.$properties[$i]['PIN_TYPE'].'</span>';
+	if ($properties[$i]['PIN_TYPE']=='DIGITAL') $properties[$i]['PIN_TYPE']='<span class="label label-primary">'.$properties[$i]['PIN_TYPE'].'</span>';
+	if ($properties[$i]['PIN_TYPE']=='VIRTUAL') $properties[$i]['PIN_TYPE']='<span class="label label-success">'.$properties[$i]['PIN_TYPE'].'</span>';
+	if (stripos($properties[$i]['PIN_TYPE'],';')) {
+		$expl=explode(';', $properties[$i]['PIN_TYPE']);
+		$properties[$i]['PIN_TYPE']='';
+		foreach($expl as $exploded) {
+			if ($exploded=='ANALOG') $properties[$i]['PIN_TYPE'].='<span class="label label-info">'.$exploded.'</span>&nbsp;';
+			if ($exploded=='DIGITAL') $properties[$i]['PIN_TYPE'].='<span class="label label-primary">'.$exploded.'</span>&nbsp;';
+			if ($exploded=='VIRTUAL') $properties[$i]['PIN_TYPE'].='<span class="label label-success">'.$exploded.'</span>&nbsp;';
+		}
+	}
+	
     if ($properties[$i]['ID']==$new_id) continue;
     if ($this->mode=='update') {
       global ${'title'.$properties[$i]['ID']};

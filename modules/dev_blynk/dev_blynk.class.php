@@ -222,27 +222,104 @@ function usual(&$out) {
  function propertySetHandle($object, $property, $value) {
   $this->getConfig();
    $table='blynk_data';
-   $properties=SQLSelect("SELECT ID FROM $table WHERE LINKED_OBJECT LIKE '".DBSafe($object)."' AND LINKED_PROPERTY LIKE '".DBSafe($property)."'");
+   $properties=SQLSelect("SELECT * FROM $table WHERE LINKED_OBJECT LIKE '".DBSafe($object)."' AND LINKED_PROPERTY LIKE '".DBSafe($property)."'");
    $total=count($properties);
    if ($total) {
     for($i=0;$i<$total;$i++) {
-     //to-do
+		$id=$properties[$i]['DEVICE_ID'];
+		$rec=SQLSelectOne("SELECT * FROM blynk_devices WHERE ID='$id'");
+		if (stripos($properties[$i]['PIN'], ';')) {
+			$pins=explode(';', $properties[$i]['PIN']);
+			$pin_types=explode(';', $properties[$i]['PIN_TYPE']);
+			$values=explode(';', $value);
+			for($j=0; $j<count($pins);$j++) {
+				$this->write_pin($rec['TOKEN'], trim(substr($pin_types[$j], 0, 1).$pins[$j]), trim($values[$j]));
+			}
+		} else {
+			$this->write_pin($rec['TOKEN'], trim(substr($properties[$i]['PIN_TYPE'], 0, 1).$properties[$i]['PIN']), ($value));
+		}
     }
    }
  }
  function processCycle() {
  $this->getConfig();
  $this->get_all_data();
-  //to-do
+ }
+ 
+ function write_pin($auth_token, $pin, $value) {
+	$host=$this->config['API_URL'];
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "$host/$auth_token/update/$pin?value=$value");
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_HEADER, FALSE);
+	$response = curl_exec($ch);
+	curl_close($ch);
  }
  
  function get_all_data() {
 	$db_rec=SQLSelect("SELECT * FROM blynk_devices");
 	foreach($db_rec as $rec) {
 		$this->get_data($rec['TOKEN']);
+		$this->get_states($rec['TOKEN']);
 	}
  }
-	 
+ function get_states($auth_token) {
+	$table='blynk_data';
+	$rec=SQLSelectOne("SELECT * FROM blynk_devices WHERE TOKEN='$auth_token'");
+	$host=$this->config['API_URL'];
+	$id=$rec['ID'];
+	
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "$host/$auth_token/isHardwareConnected");
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_HEADER, FALSE);
+	$response = curl_exec($ch);
+	curl_close($ch);
+	
+	$name='HWOnline';
+	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$name' AND DEVICE_ID='$id'");
+	$total=count($properties);
+		if ($response=='true') {
+			$properties['VALUE']='Online';
+			$properties['PIN']='<span class="label label-success">ONLINE</span>';
+		} else {
+			$properties['VALUE']='Offline';
+			$properties['PIN']='<span class="label label-danger">OFFLINE</span>';
+		}
+	if ($total) {
+		SQLUpdate($table, $properties);
+	} else {
+		$properties['TITLE']=$name;
+		$properties['DEVICE_ID']=$rec['ID'];
+		SQLInsert($table, $properties);
+	}
+	
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "$host/$auth_token/isAppConnected");
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+	curl_setopt($ch, CURLOPT_HEADER, FALSE);
+	$response = curl_exec($ch);
+	curl_close($ch);
+	
+	$name='AppOnline';
+	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$name' AND DEVICE_ID='$id'");
+	$total=count($properties);
+		if ($response=='true') {
+			$properties['VALUE']='Online';
+			$properties['PIN']='<span class="label label-success">ONLINE</span>';
+		} else {
+			$properties['VALUE']='Offline';
+			$properties['PIN']='<span class="label label-danger">OFFLINE</span>';
+		}
+	if ($total) {
+		SQLUpdate($table, $properties);
+	} else {
+		$properties['TITLE']=$name;
+		$properties['DEVICE_ID']=$rec['ID'];
+		SQLInsert($table, $properties);
+	}
+	
+ }	 
  function get_data($auth_token) {
 	    $table='blynk_data';
 		$rec=SQLSelectOne("SELECT * FROM blynk_devices WHERE TOKEN='$auth_token'");
@@ -252,56 +329,39 @@ function usual(&$out) {
 		curl_setopt($ch, CURLOPT_URL, "$host/$auth_token/project");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 		curl_setopt($ch, CURLOPT_HEADER, FALSE);
-
 		$response = curl_exec($ch);
 		curl_close($ch);
 		$json_data_dec=json_decode($response);
+		$rec['JSON_DATA']='{"id":"'.$json_data_dec->id.'","name":"'.$json_data_dec->name.'","type":"'.$json_data_dec->hardwareInfo->boardType.'"}';
 		foreach ($json_data_dec->widgets as $widget) {
 			$name=$widget->type.'_'.$widget->id;
 			$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$name' AND DEVICE_ID='$id'");
 			$total=count($properties);
-			if ($total) {
 				$properties['VALUE']=$widget->value;
 				$properties['PIN']=$widget->pin;
 				$properties['PIN_TYPE']=$widget->pinType;
 				if ($widget->pins) {
-					$properties['VALUE']='{';
-					$properties['PIN']='{';
-					$properties['PIN_TYPE']='{';
 					foreach($widget->pins as $pin) {
 						$properties['VALUE'].=$pin->value.';';
 						$properties['PIN'].=$pin->pin.';';
 						$properties['PIN_TYPE'].=$pin->pinType.';';
 					}
-					$properties['VALUE']=substr_replace($properties['VALUE'], '}', -1);
-					$properties['PIN']=substr_replace($properties['PIN'], '}', -1);
-					$properties['PIN_TYPE']=substr_replace($properties['PIN_TYPE'], '}', -1);
+					$properties['VALUE']=substr_replace($properties['VALUE'], '', -1);
+					$properties['PIN']=substr_replace($properties['PIN'], '', -1);
+					$properties['PIN_TYPE']=substr_replace($properties['PIN_TYPE'], '', -1);
 				}
+			if ($total) {
 				SQLUpdate($table, $properties);
 				if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 			} else {
-				$properties['VALUE']=$widget->value;
-				$properties['PIN']=$widget->pin;
-				$properties['PIN_TYPE']=$widget->pinType;
-				if ($widget->pins) {
-					$properties['VALUE']='{';
-					$properties['PIN']='{';
-					$properties['PIN_TYPE']='{';
-					foreach($widget->pins as $pin) {
-						$properties['VALUE'].=$pin->value.';';
-						$properties['PIN'].=$pin->pin.';';
-						$properties['PIN_TYPE'].=$pin->pinType.';';
-					}
-					$properties['VALUE']=substr_replace($properties['VALUE'], '}', -1);
-					$properties['PIN']=substr_replace($properties['PIN'], '}', -1);
-					$properties['PIN_TYPE']=substr_replace($properties['PIN_TYPE'], '}', -1);
-				}
 				$properties['DEVICE_ID']=$rec['ID'];
 				$properties['TITLE']=$name;
 				SQLInsert($table, $properties);
 			}
 		}
-		return $response;
+		$rec['UPDATED']=date('Y-m-d H:i:s');
+		SQLUpdate('blynk_devices', $rec);
+		return $response;	
  }
 /**
 * Install
@@ -342,8 +402,6 @@ blynk_data -
  blynk_devices: TITLE varchar(100) NOT NULL DEFAULT ''
  blynk_devices: TOKEN varchar(255) NOT NULL DEFAULT ''
  blynk_devices: JSON_DATA varchar(255) NOT NULL DEFAULT ''
- blynk_devices: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
- blynk_devices: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
  blynk_devices: UPDATED datetime
  blynk_data: ID int(10) unsigned NOT NULL auto_increment
  blynk_data: TITLE varchar(100) NOT NULL DEFAULT ''

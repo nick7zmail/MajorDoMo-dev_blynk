@@ -59,21 +59,3 @@
  [#endif VIEW_MODE#]
  <!-- / table blynk_devices view -->
  [#endif DATA_SOURCE#]
- <!-- action usual -->
- [#if DATA_SOURCE="blynk_data"#]
- <!-- table blynk_data search -->
- [#if VIEW_MODE="search_blynk_data" || VIEW_MODE=""#]
-  [#inc blynk_data_search_admin.html#]
- [#endif VIEW_MODE#]
- <!-- / table blynk_data search -->
- <!-- table blynk_data edit -->
- [#if VIEW_MODE="edit_blynk_data"#]
-   [#inc blynk_data_edit.html#]
- [#endif VIEW_MODE#]
- <!-- / table blynk_data edit -->
- <!-- table blynk_data view --> 
- [#if VIEW_MODE="view_blynk_data"#]
-   [#inc blynk_data_view.html#]
- [#endif VIEW_MODE#]
- <!-- / table blynk_data view -->
- [#endif DATA_SOURCE#]

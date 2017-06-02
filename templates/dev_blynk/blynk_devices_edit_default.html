@@ -26,26 +26,23 @@
  </label>
  <div class="col-lg-4"><input type="text" class="form-control" name="token" value="[#TOKEN#]" id="token"></div>
 </div>
-<!-- JSON_DATA (varchar) -->
 <div class="form-group">
  <label class="col-lg-3 control-label"[#if ERR_JSON_DATA#] style="color:red;font-weight:bold"[#endif#]>
- JSON_DATA:
+ Project ID:
  </label>
- <div class="col-lg-4"><input type="text" class="form-control" name="json_data" value="[#JSON_DATA#]" id="json_data"></div>
+ <div class="col-lg-4">[#JSON_ID#]<input type="hidden" class="form-control" name="json_data" value="[#JSON_DATA#]" id="json_data"></div>
 </div>
-<!-- LINKED_OBJECT (varchar) -->
 <div class="form-group">
- <label class="col-lg-3 control-label"[#if ERR_LINKED_OBJECT#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_LINKED_OBJECT#>:
+ <label class="col-lg-3 control-label"[#if ERR_JSON_DATA#] style="color:red;font-weight:bold"[#endif#]>
+ Project name:
  </label>
- <div class="col-lg-4"><input type="text" class="form-control" name="linked_object" value="[#LINKED_OBJECT#]" id="linked_object"></div>
+ <div class="col-lg-4">[#JSON_NAME#]</div>
 </div>
-<!-- LINKED_PROPERTY (varchar) -->
 <div class="form-group">
- <label class="col-lg-3 control-label"[#if ERR_LINKED_PROPERTY#] style="color:red;font-weight:bold"[#endif#]>
- <#LANG_LINKED_PROPERTY#>:
+ <label class="col-lg-3 control-label"[#if ERR_JSON_DATA#] style="color:red;font-weight:bold"[#endif#]>
+ Board type:
  </label>
- <div class="col-lg-4"><input type="text" class="form-control" name="linked_property" value="[#LINKED_PROPERTY#]" id="linked_property"></div>
+ <div class="col-lg-4">[#JSON_TYPE#]</div>
 </div>
 <!-- UPDATED (datetime) -->
 <div class="form-group">
@@ -53,23 +50,9 @@
  <#LANG_UPDATED#>:
  </label>
  <div class="col-lg-4">
- <input type="text" name="updated_date" value="[#UPDATED_DATE#]" maxlength=10 size=12 class="form-control">
- [#module name="dateselect" field="updated_date" form="frmEdit"#]
- &nbsp;&nbsp;&nbsp;
- <select name="updated_hours" class="form-control">
- [#begin UPDATED_HOURS#]
- <option[#if SELECTED#] selected[#endif SELECTED#]>[#TITLE#]
- [#end UPDATED_HOURS#]
- </select>
- :
- <select name="updated_minutes" class="form-control">
- [#begin UPDATED_MINUTES#]
- <option[#if SELECTED#] selected[#endif SELECTED#]>[#TITLE#]
- [#end UPDATED_MINUTES#]
- </select>
+<input class="form-control" id="disabledInput" type="text" placeholder="[#UPDATED#]" disabled>
  </div>
 </div>
-[#module name="linkedobject" object_field="linked_object" property_field="linked_property" method_field="linked_method"#]
 <div class="form-group">
         <div class="col-lg-offset-3 col-lg-4">
  [#if ID!=""#]
