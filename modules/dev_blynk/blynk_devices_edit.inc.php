@@ -25,12 +25,6 @@
    global $json_data;
    $rec['JSON_DATA']=$json_data;
 
-   global $linked_object;
-   $rec['LINKED_OBJECT']=$linked_object;
-
-   global $linked_property;
-   $rec['LINKED_PROPERTY']=$linked_property;
-
    global $updated_date;
    global $updated_minutes;
    global $updated_hours;
