@@ -12,6 +12,11 @@ $ctl = new control_modules();
 include_once(DIR_MODULES . 'dev_blynk/dev_blynk.class.php');
 $dev_blynk_module = new dev_blynk();
 $dev_blynk_module->getConfig();
+
+$old_second = date('s');
+$old_minute = date('i');
+$old_hour = date('h');
+
 $tmp = SQLSelectOne("SELECT ID FROM blynk_devices LIMIT 1");
 if (!$tmp['ID'])
    exit; // no devices added -- no need to run this cycle
@@ -23,8 +28,38 @@ while (1)
    setGlobal((str_replace('.php', '', basename(__FILE__))) . 'Run', time(), 1);
    if ((time()-$latest_check)>$checkEvery) {
     $latest_check=time();
-    echo date('Y-m-d H:i:s').' Polling devices...';
-    $dev_blynk_module->processCycle();
+	echo date('Y-m-d H:i:s').' Polling devices...';
+	$s = date('s');
+   	$m = date('i');
+	$h = date('h');
+		if ($s != $old_second)
+	   {
+			$dev_blynk_module->processCycle('5s');
+			if($s20>=20) {
+				$dev_blynk_module->processCycle('20s');
+				$s20=0;
+			} else {
+				$s20=$s20+5;
+			}
+			$old_second = $s;
+	   }	
+	   if ($m != $old_minute)
+	   {
+			$dev_blynk_module->processCycle('1m');
+			$old_minute = $m;
+			if($m10>=10) {
+				$dev_blynk_module->processCycle('10m');
+				$m10=0;
+			} else {
+				$m10++;
+			}
+	   }
+
+	   if ($h != $old_hour)
+	   {
+			$dev_blynk_module->processCycle('1h');
+			$old_hour = $h;
+	   }
    }
    if (file_exists('./reboot') || IsSet($_GET['onetime']))
    {

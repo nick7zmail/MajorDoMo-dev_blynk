@@ -241,9 +241,9 @@ function usual(&$out) {
     }
    }
  }
- function processCycle() {
+ function processCycle($chtime = '') {
  $this->getConfig();
- $this->get_all_data();
+ $this->get_all_data($chtime);
  }
  
  function write_pin($auth_token, $pin, $value) {
@@ -256,8 +256,14 @@ function usual(&$out) {
 	curl_close($ch);
  }
  
- function get_all_data() {
-	$db_rec=SQLSelect("SELECT * FROM blynk_devices");
+ function get_all_data($chtime = '') {
+	if(isset($chtime) && $chtime!='all' && $chtime!='') {
+		$db_rec=SQLSelect("SELECT * FROM blynk_devices WHERE CHTIME='$chtime'");
+	} elseif (isset($chtime) && $chtime!='all') {
+		$db_rec=SQLSelect("SELECT * FROM blynk_devices");
+	} else {
+		$db_rec=SQLSelect("SELECT * FROM blynk_devices WHERE CHTIME<>'none'");
+	}
 	foreach($db_rec as $rec) {
 		$this->get_data($rec['TOKEN']);
 		$this->get_states($rec['TOKEN']);
@@ -402,6 +408,7 @@ blynk_data -
  blynk_devices: TITLE varchar(100) NOT NULL DEFAULT ''
  blynk_devices: TOKEN varchar(255) NOT NULL DEFAULT ''
  blynk_devices: JSON_DATA varchar(255) NOT NULL DEFAULT ''
+ blynk_devices: CHTIME varchar(10) NOT NULL DEFAULT ''
  blynk_devices: UPDATED datetime
  blynk_data: ID int(10) unsigned NOT NULL auto_increment
  blynk_data: TITLE varchar(100) NOT NULL DEFAULT ''

@@ -80,6 +80,13 @@
   }
   }
 
+  if ($this->mode=='set_time') {
+	  if (isset($_GET['time'])) {
+		  $rec['CHTIME']=$_GET['time'];
+		  SQLUpdate($table_name, $rec);
+	  }
+  }
+  
   if ($this->tab=='data') {
    //dataset2
    $new_id=0;

@@ -1,8 +1,30 @@
 
 <!-- table blynk_devices search -->
 <p>
-<a href="?view_mode=edit_blynk_devices&data_source=<#DATA_SOURCE#>" class="btn btn-default"> <#LANG_ADD#></a>
+<a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><span class="glyphicon glyphicon-cog"></span></a>
+<a href="?view_mode=edit_blynk_devices&data_source=<#DATA_SOURCE#>" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <#LANG_ADD#></a>
 </p>
+<div style="display:none" id='api_settings'>
+&nbsp;
+<form action="?" method="post" enctype="multipart/form-data" name="frmEdit" class="form-horizontal">
+<fieldset>
+<div class="form-group">
+ <label class="control-label"[#if ERR_API_URL#] style="color:red;font-weight:bold"[#endif#]>
+ API URL:
+ (*)
+ </label>
+ <div class="controls"><input type="text" name="api_url" value="[#API_URL#]" class="input"></div>
+</div>
+<div class="form-actions">
+<button type="submit" name="subm" value="Submit" class="btn btn-primary"><#LANG_UPDATE#></button>
+<input type="hidden" name="view_mode" value="update_settings">
+<input type="hidden" name="mode" value="update">
+</div>
+</fieldset>
+</form>
+<br>
+</div>
+
 <table width=100% border=0><tr>
 <td valign=top>
 <!-- results -->
@@ -61,7 +83,8 @@
   <div style="width:120px">
   [#if "<#ACTION#>"=="admin"#]
    <a href="?data_source=<#DATA_SOURCE#>&view_mode=edit_blynk_devices&id=[#ID#]" class="btn btn-default" title="Edit"><i class="glyphicon glyphicon-pencil"></i></a>
-    <a href="?data_source=<#DATA_SOURCE#>&view_mode=delete_blynk_devices&id=[#ID#]" onClick="return confirm('Are you sure? Please confirm.')" class="btn btn-default" title="Delete"><i class="glyphicon glyphicon-remove"></i></a>
+   <a href="?data_source=<#DATA_SOURCE#>&view_mode=edit_blynk_devices&id=[#ID#]&tab=data" class="btn btn-default" title="Data"><i class="glyphicon glyphicon-th-list"></i></a>
+   <a href="?data_source=<#DATA_SOURCE#>&view_mode=delete_blynk_devices&id=[#ID#]" onClick="return confirm('Are you sure? Please confirm.')" class="btn btn-default" title="Delete"><i class="glyphicon glyphicon-remove"></i></a>
   [#endif ACTION#]
   </div>
  </td>
