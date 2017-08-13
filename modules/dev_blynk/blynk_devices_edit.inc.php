@@ -139,6 +139,8 @@
        addLinkedProperty($properties[$i]['LINKED_OBJECT'], $properties[$i]['LINKED_PROPERTY'], $this->name);
       }
      }
+	if (is_numeric($properties[$i]['VALUE'])) $properties[$i]['VALUE_T']='float';
+	if ($properties[$i]['VALUE']=='1' || $properties[$i]['VALUE']=='0') $properties[$i]['VALUE_T']='num';
    }
    $out['PROPERTIES']=$properties;   
   }
