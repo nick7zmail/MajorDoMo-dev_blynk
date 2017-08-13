@@ -106,6 +106,19 @@
 		}
 	}
 	
+	if ($this->mode=='updateSets') {
+		global $setsid;
+		$prop_rec=SQLSelectOne("SELECT * FROM blynk_data WHERE ID='".$setsid."'");
+		if($this->sets=='r1') $prop_rec['R']=1;
+		if($this->sets=='r0') $prop_rec['R']=0;
+		if($this->sets=='i1') $prop_rec['I']=1;
+		if($this->sets=='i0') $prop_rec['I']=0;
+		SQLUpdate('blynk_data', $prop_rec);
+	}
+	global $delete_id;
+	   if ($delete_id) {
+		SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
+	   }
     if ($properties[$i]['ID']==$new_id) continue;
     if ($this->mode=='update') {
       global ${'title'.$properties[$i]['ID']};

@@ -58,6 +58,7 @@ function saveParams($data=0) {
 function getParams() {
   global $id;
   global $mode;
+  global $sets;
   global $view_mode;
   global $edit_mode;
   global $data_source;
@@ -67,6 +68,9 @@ function getParams() {
   }
   if (isset($mode)) {
    $this->mode=$mode;
+  }
+  if (isset($sets)) {
+   $this->sets=$sets;
   }
   if (isset($view_mode)) {
    $this->view_mode=$view_mode;
@@ -236,7 +240,12 @@ function usual(&$out) {
 				$this->write_pin($rec['TOKEN'], trim(substr($pin_types[$j], 0, 1).$pins[$j]), trim($values[$j]));
 			}
 		} else {
-			$this->write_pin($rec['TOKEN'], trim(substr($properties[$i]['PIN_TYPE'], 0, 1).$properties[$i]['PIN']), ($value));
+			if ($properties[$i]['I']==1) {
+				if ($value==1) $value=0; else $value=1;
+				$this->write_pin($rec['TOKEN'], trim(substr($properties[$i]['PIN_TYPE'], 0, 1).$properties[$i]['PIN']), ($value));
+			} else {
+				$this->write_pin($rec['TOKEN'], trim(substr($properties[$i]['PIN_TYPE'], 0, 1).$properties[$i]['PIN']), ($value));
+			}
 		}
     }
    }
@@ -358,7 +367,16 @@ function usual(&$out) {
 				}
 			if ($total) {
 				SQLUpdate($table, $properties);
-				if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+				if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+					if ($properties['R']==1) {
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], round($properties['VALUE'],1));
+					} elseif ($properties['I']==1) {
+						if ($properties['VALUE']==1) $properties['VALUE']=0; else $properties['VALUE']=1;
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+					} else {
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+					}
+				}
 			} else {
 				$properties['DEVICE_ID']=$rec['ID'];
 				$properties['TITLE']=$name;
@@ -415,6 +433,8 @@ blynk_data -
  blynk_data: VALUE varchar(255) NOT NULL DEFAULT ''
  blynk_data: PIN varchar(50) NOT NULL DEFAULT ''
  blynk_data: PIN_TYPE varchar(100) NOT NULL DEFAULT ''
+ blynk_data: R varchar(100) NOT NULL DEFAULT ''
+ blynk_data: I varchar(100) NOT NULL DEFAULT ''
  blynk_data: DEVICE_ID int(10) NOT NULL DEFAULT '0'
  blynk_data: LINKED_OBJECT varchar(100) NOT NULL DEFAULT ''
  blynk_data: LINKED_PROPERTY varchar(100) NOT NULL DEFAULT ''
