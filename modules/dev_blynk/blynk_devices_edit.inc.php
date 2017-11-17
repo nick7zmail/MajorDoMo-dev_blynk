@@ -105,24 +105,16 @@
 			if ($exploded=='VIRTUAL') $properties[$i]['PIN_TYPE'].='<span class="label label-success">'.$exploded.'</span>&nbsp;';
 		}
 	}
-	
-	if ($this->mode=='updateSets') {
-		global $setsid;
-		$prop_rec=SQLSelectOne("SELECT * FROM blynk_data WHERE ID='".$setsid."'");
-		if($this->sets=='r1') $prop_rec['R']=1;
-		if($this->sets=='r0') $prop_rec['R']=0;
-		if($this->sets=='i1') $prop_rec['I']=1;
-		if($this->sets=='i0') $prop_rec['I']=0;
-		SQLUpdate('blynk_data', $prop_rec);
-	}
 	global $delete_id;
 	   if ($delete_id) {
-		SQLExec("DELETE FROM dev_broadlink_commands WHERE ID='".(int)$delete_id."'");
+		SQLExec("DELETE FROM blynk_data WHERE ID='".(int)$delete_id."'");
 	   }
     if ($properties[$i]['ID']==$new_id) continue;
     if ($this->mode=='update') {
       global ${'title'.$properties[$i]['ID']};
       $properties[$i]['TITLE']=trim(${'title'.$properties[$i]['ID']});
+      global ${'dest'.$properties[$i]['ID']};
+	  $properties[$i]['DEST']=trim(${'dest'.$properties[$i]['ID']});
       global ${'value'.$properties[$i]['ID']};
       $properties[$i]['VALUE']=trim(${'value'.$properties[$i]['ID']});
       global ${'linked_object'.$properties[$i]['ID']};
@@ -141,6 +133,11 @@
      }
 	if (is_numeric($properties[$i]['VALUE'])) $properties[$i]['VALUE_T']='float';
 	if ($properties[$i]['VALUE']=='1' || $properties[$i]['VALUE']=='0') $properties[$i]['VALUE_T']='num';
+	if ($properties[$i]['TITLE']=='HWOnline' || $properties[$i]['TITLE']=='AppOnline') {
+		$properties[$i]['SDEVICE_TYPE']='sensor_state';
+	} else {
+		$properties[$i]['SDEVICE_TYPE']='any';
+	}
    }
    $out['PROPERTIES']=$properties;   
   }
