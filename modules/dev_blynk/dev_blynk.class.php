@@ -343,7 +343,7 @@ function usual(&$out) {
 		$response = curl_exec($ch);
 		curl_close($ch);
 		$json_data_dec=json_decode($response);
-		$rec['JSON_DATA']='{"id":"'.$json_data_dec->id.'","name":"'.$json_data_dec->name.'","type":"'.$json_data_dec->hardwareInfo->boardType.'"}';
+		$rec['JSON_DATA']='{"id":"'.$json_data_dec->id.'","name":"'.$json_data_dec->name.'","type":"'.$json_data_dec->boardType.'"}';
 		foreach ($json_data_dec->widgets as $widget) {
 			$name=$widget->type.'_'.$widget->id;
 			$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$name' AND DEVICE_ID='$id'");
