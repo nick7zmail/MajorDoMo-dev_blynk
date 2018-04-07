@@ -1,5 +1,6 @@
 
 <!-- table blynk_devices search -->
+[#if "<#ACTION#>"=="admin"#]
 <p>
 <a href="#" class="btn btn-primary" onClick="$('#api_settings').toggle();return false;"><span class="glyphicon glyphicon-cog"></span></a>
 <a href="?view_mode=edit_blynk_devices&data_source=<#DATA_SOURCE#>" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> <#LANG_ADD#></a>
@@ -24,7 +25,7 @@
 </form>
 <br>
 </div>
-
+[#endif ACTION#]
 <table width=100% border=0><tr>
 <td valign=top>
 <!-- results -->
@@ -54,6 +55,7 @@
    [#TITLE#]
  </b>
  </td>
+ [#if "<#ACTION#>"=="admin"#]
  <td style="vertical-align:middle">
    [#CHTIME#]
  </td>
@@ -64,6 +66,7 @@
    &nbsp;
   [#endif#]
  </td>
+ [#endif ACTION#]
   <td style="vertical-align:middle"
    >
   [#if HWINFO!=""#]

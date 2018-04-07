@@ -235,7 +235,11 @@ function usual(&$out) {
 		if (stripos($properties[$i]['PIN'], ';')) {
 			$pins=explode(';', $properties[$i]['PIN']);
 			$pin_types=explode(';', $properties[$i]['PIN_TYPE']);
-			$values=explode(';', $value);
+			if ($properties[$i]['DEST']=='RGB') {
+				$values=hex2adc($value);
+			} else {
+				$values=explode(';', $value);
+			}
 			for($j=0; $j<count($pins);$j++) {
 				$this->write_pin($rec['TOKEN'], trim(substr($pin_types[$j], 0, 1).$pins[$j]), trim($values[$j]));
 			}
@@ -371,6 +375,10 @@ function usual(&$out) {
 					} elseif ($properties['DEST']=='INV') {
 						if ($properties['VALUE']==1) $properties['VALUE']=0; else $properties['VALUE']=1;
 						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+					} elseif ($properties['DEST']=='RGB') {
+						$rgb_arr=explode(';', $properties['VALUE']);
+						$html_color=adc2hex($rgb_arr);
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $html_color);
 					} else {
 						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
 					}
@@ -385,6 +393,7 @@ function usual(&$out) {
 		SQLUpdate('blynk_devices', $rec);
 		return $response;	
  }
+ 
 /**
 * Install
 *

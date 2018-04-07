@@ -29,7 +29,15 @@
   <td valign="top"><input type="hidden" name="title[#ID#]" id="title[#ID#]" value="[#TITLE#]">[#TITLE#]</td>
   <td valign="top">[#PIN#]<br>[#PIN_TYPE#]</td>
   <td valign="top"><input type="hidden" name="value[#ID#]" id="value[#ID#]" value="[#VALUE#]">[#VALUE#]</td>
-  <td valign="top"><input type="text" name="dest[#ID#]" id="dest[#ID#]" value="[#DEST#]"></td></td>
+  <td valign="top"><!--input type="text" name="dest[#ID#]" id="dest[#ID#]" value="[#DEST#]"-->
+	<select class="form-control" name="dest[#ID#]">
+		<option value="" [#if DEST=="" #] selected[#endif#]>Нет</option>
+		<option value="R0" [#if DEST=="R0" #] selected[#endif#]>Округлить (целое)</option>
+		<option value="R1" [#if DEST=="R1" #] selected[#endif#]>Округлить (1 знак)</option>
+		<option value="INV" [#if DEST=="INV" #] selected[#endif#]>Инвертировать</option>
+		<option value="RGB" [#if DEST=="RGB" #] selected[#endif#]>RGB виджет</option>
+	</select>  
+  </td></td>
   <td valign="top">
   [#if SDEVICE_TYPE!=""#]
 	[#module name="devices" action="link" title="<#TITLE#>_<#PROPERTIES.TITLE#>" type="<#PROPERTIES.SDEVICE_TYPE#>" source_table="blynk_data" source_table_id="<#PROPERTIES.ID#>" linked_object="<#PROPERTIES.LINKED_OBJECT#>"#]
@@ -64,6 +72,3 @@
 </div>
 </fieldset>
 </form>
-<!-- dataset2 (module) -->
-<div class="form-group">
-</div>
