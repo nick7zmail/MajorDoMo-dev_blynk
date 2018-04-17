@@ -295,13 +295,16 @@ function usual(&$out) {
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$name' AND DEVICE_ID='$id'");
 	$total=count($properties);
 		if ($response=='true') {
-			$properties['VALUE']='Online';
+			$properties['VALUE']='1';
 			$properties['PIN']='<span class="label label-success">ONLINE</span>';
 		} else {
-			$properties['VALUE']='Offline';
+			$properties['VALUE']='0';
 			$properties['PIN']='<span class="label label-danger">OFFLINE</span>';
 		}
 	if ($total) {
+		if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+			sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+		}
 		SQLUpdate($table, $properties);
 	} else {
 		$properties['TITLE']=$name;
@@ -320,13 +323,16 @@ function usual(&$out) {
 	$properties=SQLSelectOne("SELECT * FROM $table WHERE TITLE='$name' AND DEVICE_ID='$id'");
 	$total=count($properties);
 		if ($response=='true') {
-			$properties['VALUE']='Online';
+			$properties['VALUE']='1';
 			$properties['PIN']='<span class="label label-success">ONLINE</span>';
 		} else {
-			$properties['VALUE']='Offline';
+			$properties['VALUE']='0';
 			$properties['PIN']='<span class="label label-danger">OFFLINE</span>';
 		}
 	if ($total) {
+		if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
+			sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+		}
 		SQLUpdate($table, $properties);
 	} else {
 		$properties['TITLE']=$name;
