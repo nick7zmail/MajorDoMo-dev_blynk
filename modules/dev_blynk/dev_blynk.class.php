@@ -303,7 +303,7 @@ function usual(&$out) {
 		}
 	if ($total) {
 		if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-			sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+			sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE'], array($this->name => '0'));
 		}
 		SQLUpdate($table, $properties);
 	} else {
@@ -331,7 +331,7 @@ function usual(&$out) {
 		}
 	if ($total) {
 		if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
-			sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+			sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE'], array($this->name => '0'));
 		}
 		SQLUpdate($table, $properties);
 	} else {
@@ -375,18 +375,18 @@ function usual(&$out) {
 				SQLUpdate($table, $properties);
 				if(isset($properties['LINKED_OBJECT']) && $properties['LINKED_OBJECT']!='' && isset($properties['LINKED_PROPERTY']) && $properties['LINKED_PROPERTY']!='') {
 					if ($properties['DEST']=='R1') {
-						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], round($properties['VALUE'],1));
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], round($properties['VALUE'],1), array($this->name => '0'));
 					} elseif ($properties['DEST']=='R0') {
-						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], round($properties['VALUE'],0));
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], round($properties['VALUE'],0), array($this->name => '0'));
 					} elseif ($properties['DEST']=='INV') {
 						if ($properties['VALUE']==1) $properties['VALUE']=0; else $properties['VALUE']=1;
-						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE'], array($this->name => '0'));
 					} elseif ($properties['DEST']=='RGB') {
 						$rgb_arr=explode(';', $properties['VALUE']);
 						$html_color=adc2hex($rgb_arr);
-						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $html_color);
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $html_color, array($this->name => '0'));
 					} else {
-						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE']);
+						sg($properties['LINKED_OBJECT'].'.'.$properties['LINKED_PROPERTY'], $properties['VALUE'], array($this->name => '0'));
 					}
 				}
 			} else {
